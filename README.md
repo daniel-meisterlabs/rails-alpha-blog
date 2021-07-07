@@ -1,24 +1,7 @@
-# README
+## Deploy with Heroku
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+We moved the `sqlite3` gem into both `development` and `test` groups. Furthermore, we created a new `production` group and added the postgres gem `pg`.
 
-Things you may want to cover:
+To locally install gems without production run: `bundle install --without production`
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Heroku rails deploy guide: https://devcenter.heroku.com/articles/getting-started-with-rails6
