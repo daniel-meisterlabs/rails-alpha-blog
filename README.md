@@ -470,7 +470,7 @@ rails routes --expanded
 # Controller#Action | articles#edit
 ```
 
-To determine the path for routes in Rails, you just have take the `Prefix` from above and append `_path`. So, to get the pather for root, you just use `root_path`. The same concept applies for all routes.
+To determine the path for routes in Rails, you just have take the `Prefix` from above and append `_path`. So, to get the path for root, you just use `root_path`. The same concept applies for all routes.
 
 Example link for the `/articles/:id/edit` route:
 
