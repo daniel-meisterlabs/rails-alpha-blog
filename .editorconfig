@@ -1,0 +1,13 @@
+root = true
+
+[*]
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+[*.{rake,rb, html, html.erb}]
+indent_size = 2
+
+[*.{js,es6,es6.erb,jsx,jst.ejs}]
+indent_size = 2
