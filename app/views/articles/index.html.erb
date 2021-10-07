@@ -14,7 +14,13 @@
       <tr>
         <td><%= article.title %></td>
         <td><%= article.description %></td>
-        <td>Placeholder</td>
+        <td>
+          <%= link_to(
+            'Delete', # Link text
+            article_path(article), # Path
+            method: :delete # Http method
+          ) %>
+        </td>
       </tr>
     <% end %>
   </tbody>
