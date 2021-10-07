@@ -425,6 +425,12 @@ Now each table row has a "Delete" link, which allows us to delete individual tab
 
 If you don't provide the `method` for `link_to`, then the link will behave like a `GET` request and simply redirect you to `/articles/:id`.
 
+### Linking to our routes
+
+We basically add a bunch of `link_to` elements to our views (just like with the delete link from above), so we can navigate easier between pages.
+
+Take a look at all of the files in both `app/views/pages/` and `app/views/articles`.
+
 # Examples
 
 ## Adding new fields to an already existing table
@@ -444,6 +450,34 @@ end
 ```
 
 3. `rails db:migrate`
+
+## Determining paths for routes
+
+With `rails routes --expanded` you get valuable information about each exposed route. Take these 2 routes for example:
+
+```bash
+rails routes --expanded
+# =>
+# --[ Route 1 ]---------------------------
+# Prefix            | root
+# Verb              | GET
+# URI               | /
+# Controller#Action | pages#home
+# --[ Route 6 ]---------------------------
+# Prefix            | edit_article
+# Verb              | GET
+# URI               | /articles/:id/edit(.:format)
+# Controller#Action | articles#edit
+```
+
+To determine the path for routes in Rails, you just have take the `Prefix` from above and append `_path`. So, to get the pather for root, you just use `root_path`. The same concept applies for all routes.
+
+Example link for the `/articles/:id/edit` route:
+
+```ruby
+# You must provide the article's id (e.g: with @article instance variable)
+<%= link_to('Edit article', edit_article_path(@article)) %>
+```
 
 ## Rails console tips
 
