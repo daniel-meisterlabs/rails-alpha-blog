@@ -16,6 +16,10 @@ Heroku rails deploy guide: https://devcenter.heroku.com/articles/getting-started
 
 # Udemy course walkthrough
 
+This application was created with the help of this udemy course: https://www.udemy.com/share/1013z62@PW1gfWJKc1YIckREA3VzVD5HYFQ=/
+
+I followed the course and documented most of the steps taken. So, you can follow this documentation from top to bottom.
+
 ## Articles setup
 
 ### Create table
