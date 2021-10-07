@@ -74,6 +74,7 @@ We only expose the `show` route at first and will gradually add routes as we nee
 Rails.application.routes.draw do
   root 'pages#home'
   get 'about', to: 'pages#about'
+  # Provides REST-ful routes, which are mapped to Rails actions
   resources :articles, only: [:show]
 end
 ```
@@ -377,6 +378,52 @@ Binding the form will automatically fill input fields with data from the instanc
   %>
 <% end %>
 ```
+
+### Create `#destroy` action and add destroy link
+
+This is the last missing action for our articles routes:
+
+```ruby
+# config/routes.rb
+resources :articles, only: [:show, :index, :new, :create, :edit, :update, :destroy]
+```
+
+Since we have all routes exposed now, we can actually shorten it to:
+
+```ruby
+resources :articles
+```
+
+Afterwards, we define the `#destroy` action:
+
+```ruby
+# app/controllers/articles_controller.rb #destroy action
+def destroy
+  @article = Article.find(params[:id])
+  @article.destroy
+
+  # Redirect to our articles index page
+  redirect_to articles_path
+end
+```
+
+At last, we need to make a link for the destroy action. To do this, we replace the `<td>Placeholder</td>` field from our `app/views/articles/index.html.erb` file with:
+
+```ruby
+# app/views/articles/index.html.erb
+<td>
+  <%= link_to(
+    'Delete', # Link text
+    article_path(article), # Path
+    method: :delete, # Http method
+    data: { confirm: 'Are you sure?' } # Confirm prompt
+  ) %>
+</td>
+```
+
+Now each table row has a "Delete" link, which allows us to delete individual table rows. The user will be prompted with "Are you sure?", where he can either confirm or cancel.
+
+If you don't provide the `method` for `link_to`, then the link will behave like a `GET` request and simply redirect you to `/articles/:id`.
 
 # Examples
 

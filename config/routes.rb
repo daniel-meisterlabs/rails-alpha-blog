@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   root 'pages#home'
   get 'about', to: 'pages#about'
-  resources :articles, only: [:show, :index, :new, :create, :edit, :update]
+  # Provides REST-ful routes, which are mapped to Rails actions
+  resources :articles
 end

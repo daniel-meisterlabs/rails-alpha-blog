@@ -41,4 +41,12 @@ class ArticlesController < ApplicationController
       render 'edit'
     end
   end
+
+  def destroy
+    @article = Article.find(params[:id])
+    @article.destroy
+
+    # Redirect to our articles index page
+    redirect_to articles_path
+  end
 end
