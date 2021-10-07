@@ -54,6 +54,82 @@ class Article < ApplicationRecord
 end
 ```
 
+4. Add at least 1 article to the database (we need it later):
+
+```bash
+article = Article.new(title: "First Article", description: "First article description")
+article.save
+```
+
+### Handling routes
+
+We only expose the `show` route at first and will gradually add routes as we need them.
+
+```ruby
+# config/routes.rb
+Rails.application.routes.draw do
+  root 'pages#home'
+  get 'about', to: 'pages#about'
+  resources :articles, only: [:show]
+end
+```
+
+You can check for all available routes in a readable way with: `rails routes --expanded`.
+
+If you start the server now and go to `localhost:3000/articles/1`, you will get an error saying that the `ArticlesController` was not found. However, this confirms that the route works.
+
+### Creating `ArticlesController#show` action and corresponding views
+
+To fix the error from last section, we simply create the `ArticlesController`:
+
+```ruby
+# app/controllers/articles_controller.rb
+class ArticlesController < ApplicationController
+  def show
+  end
+end
+```
+
+If you now refresh the `localhost:3000/articles/1` page, an error will tell you, that `ArticlesController#show` is missing a template. So let's create the template:
+
+```ruby
+# app/views/articles/show.html.erb
+<h1>Showing article details</h1>
+```
+
+Visiting `articles/1` again confirms that the route is working as intended now.
+
+### Display article data
+
+Right now we don't actually display article data when accessing the article show route `localhost:3000/articles/1`.
+
+To do that, we first need to make the article data available in the `ArticlesController`:
+
+```ruby
+# app/controllers/articles_controller.rb #show method
+def show
+  # Instance variables are prefixed with @ and make
+  # the variable avialable in the corresponding action.
+  # `params[:id]` returns the id from the url.
+  @article = Article.find(params[:id])
+end
+```
+
+Now we can display the data in the view:
+
+```ruby
+# app/views/articles/show.html.erb
+<p>
+  <strong>Title: </strong>
+  <%= @article.title %>
+</p>
+<p>
+  <strong>Description: </strong>
+  <%= @article.description %>
+</p>
+```
+Note that that `<% ... %>` only evaluates ruby. To also display it, you need `<%= ... %>`
+
 ## Examples
 
 ### Adding new fields to an already existing table
@@ -78,12 +154,12 @@ end
 
 Start rails console: `rails c`
 
-
 #### Manipulate database directly
 
 ```bash
 Article.create(title: "First Article", description: "Created via rails console")
 ```
+
 #### Using variables
 
 The data will not hit the database directly, so you can double check your changes, before saving them. Any helper variables you create will be deleted after exiting the rails console.
@@ -133,6 +209,46 @@ article.errors.full_messages
 # => ["Title can't be blank", "Description can't be blank"]
 ```
 
+### Debugging with `byebug`
 
+You can set `byebug` anywhere in the code, which will pause the application at exactly that point, before continuing.
+
+This allows you to inspect variable values in the console, which are available at the `byebug` pausing.
+
+Example:
+
+```ruby
+# app/controllers/articles_controller.rb
+class ArticlesController < ApplicationController
+  def show
+    @article = Article.find(params[:id])
+    byebug # Pauses the application exactly here
+  end
+end
+```
+
+Start the server and visit any article, e.g: `localhost:3000/articles/1`.
+
+When the application is paused, a `byebug` console is opened in the same terminal window, where you started the rails server. Here you can then inspect all variables, which are currently available.
+
+```bash
+params
+# => <ActionController::Parameters {"controller"=>"articles",
+# "action"=>"show", "id"=>"1"} permitted: false>
+
+params[:id]
+# => "1"
+
+@article.title
+# => "First Article"
+
+# To continue the application
+continue
+```
+
+
+## Useful rails commands
+
+1. Readable list all available routes: `rails routes --expanded`
 
 
