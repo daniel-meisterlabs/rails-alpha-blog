@@ -48,9 +48,9 @@ This is important to e.g: Disallow creating articles with empty titles or descri
 ```ruby
 # app/models/article.rb
 class Article < ApplicationRecord
-    #         :attribute, validations
-    validates :title, presence: true, length: { minimum: 6, maximum: 100 }
-    validates :description, presence: true, length: { minimum: 10, maximum: 300 }
+  #         :attribute, validations
+  validates :title, presence: true, length: { minimum: 6, maximum: 100 }
+  validates :description, presence: true, length: { minimum: 10, maximum: 300 }
 end
 ```
 
