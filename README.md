@@ -328,6 +328,56 @@ In this example, we are making flash messages available for all pages. Therefore
 </body>
 ```
 
+### Create `#edit` + `#update` actions and corresponding views
+
+As usual, we expose the necessary routes first. Then we create the actions for them:
+
+```ruby
+# config/routes.rb
+resources :articles, only: [:show, :index, :new, :create, :edit, :update] # Added :edit and :update routes
+
+# app/controllers/articles_controller.rb #edit and #update actions
+def edit
+  @article = Article.find(params[:id])
+end
+
+def update
+  @article = Article.find(params[:id])
+
+  if @article.update(params.require(:article).permit(:title, :description))
+    flash[:notice] = "Article was updated successfully."
+    redirect_to @article
+  else
+    render 'edit'
+  end
+end
+```
+
+The view will be very similar to the already existing `app/views/articles/new.html.erb`, so copy the contents of this file int a new one called `app/views/articles/edit.html.erb`.
+
+The only changes we need to make are for header texts and we need to bind the form to an instance variable.
+
+We need to make 2 adjustments to `edit.html.erb`:
+1. Change header texts
+2. Bind the form to an instance variable
+
+Binding the form will automatically fill input fields with data from the instance variable:
+
+```ruby
+# app/views/articles/edit.html.erb
+<%
+  # https://guides.rubyonrails.org/form_helpers.html#binding-a-form-to-an-object
+  # model: Bind form to @article object, to fill input fields with actual data
+  # local: Uses local http instead of ajax, when true
+%>
+
+<%= form_with(model: @article, local: true) do |f| %>
+  <%
+    # Form content does not change
+  %>
+<% end %>
+```
+
 # Examples
 
 ## Adding new fields to an already existing table
