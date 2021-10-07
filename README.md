@@ -99,17 +99,17 @@ If you now refresh the `localhost:3000/articles/1` page, an error will tell you,
 
 Visiting `articles/1` again confirms that the route is working as intended now.
 
-### Display article data
+#### Display article data for the `ArticlesController#show` action
 
 Right now we don't actually display article data when accessing the article show route `localhost:3000/articles/1`.
 
-To do that, we first need to make the article data available in the `ArticlesController`:
+To do that, we first need to make the article data available in the `ArticlesController#show` action:
 
 ```ruby
 # app/controllers/articles_controller.rb #show method
 def show
   # Instance variables are prefixed with @ and make
-  # the variable avialable in the corresponding action.
+  # the variable avialable in the corresponding view.
   # `params[:id]` returns the id from the url.
   @article = Article.find(params[:id])
 end
@@ -128,7 +128,50 @@ Now we can display the data in the view:
   <%= @article.description %>
 </p>
 ```
-Note that that `<% ... %>` only evaluates ruby. To also display it, you need `<%= ... %>`
+Note that that `<% ... %>` only evaluates ruby. To also display it, you need `<%= ... %>`.
+
+### Create `ArticlesController#index` action and corresponding views
+
+First, we need to add the proper route for the index action, then we can add it to our `ArticlesController`:
+
+```ruby
+# config/routes.rb
+resources :articles, only: [:show, :index] # Added :index route
+
+# app/controllers/articles_controller.rb
+def index
+  @articles = Article.all
+end
+```
+
+As with the `#show` action, the `#index` action obviously also expects a corresponding view to actually display the data:
+
+```ruby
+# app/views/articles/index.html.erb
+<h1>Articles listing page</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @articles.each do |article| %>
+      <tr>
+        <td><%= article.title %></td>
+        <td><%= article.description %></td>
+        <td>Placeholder</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+```
+
+This will create a simple html table and list all available articles for us.
 
 ## Examples
 
