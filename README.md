@@ -1,8 +1,4 @@
-## Deploy with Heroku
-
-We moved the `sqlite3` gem into both `development` and `test` groups. Furthermore, we created a new `production` group and added the postgres gem `pg`.
-
-Heroku rails deploy guide: https://devcenter.heroku.com/articles/getting-started-with-rails6
+# Working with this repo
 
 ## Run locally
 
@@ -11,6 +7,14 @@ Heroku rails deploy guide: https://devcenter.heroku.com/articles/getting-started
 3. `rails s`
 
 To locally install gems without production run: `bundle install --without production`
+
+## Deploy with Heroku
+
+We moved the `sqlite3` gem into both `development` and `test` groups. Furthermore, we created a new `production` group and added the postgres gem `pg`.
+
+Heroku rails deploy guide: https://devcenter.heroku.com/articles/getting-started-with-rails6
+
+# Udemy course walkthrough
 
 ## Articles setup
 
@@ -97,7 +101,7 @@ If you now refresh the `localhost:3000/articles/1` page, an error will tell you,
 <h1>Showing article details</h1>
 ```
 
-Visiting `articles/1` again confirms that the route is working as intended now.
+Visiting `localhost:3000/articles/1` again confirms that the route is working as intended now.
 
 #### Display article data for the `ArticlesController#show` action
 
@@ -106,7 +110,7 @@ Right now we don't actually display article data when accessing the article show
 To do that, we first need to make the article data available in the `ArticlesController#show` action:
 
 ```ruby
-# app/controllers/articles_controller.rb #show method
+# app/controllers/articles_controller.rb #show action
 def show
   # Instance variables are prefixed with @ and make
   # the variable avialable in the corresponding view.
@@ -138,7 +142,7 @@ First, we need to add the proper route for the index action, then we can add it 
 # config/routes.rb
 resources :articles, only: [:show, :index] # Added :index route
 
-# app/controllers/articles_controller.rb
+# app/controllers/articles_controller.rb #index action
 def index
   @articles = Article.all
 end
@@ -172,6 +176,88 @@ As with the `#show` action, the `#index` action obviously also expects a corresp
 ```
 
 This will create a simple html table and list all available articles for us.
+
+### Create `#new` + `#create` actions and corresponding views
+
+Add required routes:
+
+```ruby
+# config/routes.rb
+resources :articles, only: [:show, :index, :new, :create] # Added :new and :create routes
+```
+
+The view template for the `:new` route will display the form. On form submission, the data should be sent to the `#create` action.
+
+```ruby
+# app/controllers/articles_controller.rb #new and #create actions
+def new
+  @articles = Article.all
+end
+
+def create
+  # Renders the submitted form data, but does not store it yet.
+  # Great to test that everything works, before saving to the database.
+  render plain: params[:article]
+end
+```
+
+Add the form to create new articles in the view for our `:new` route:
+
+```ruby
+# app/views/articles/new.html.erb
+<h1>Create a new article</h1>
+
+<%
+  # https://guides.rubyonrails.org/form_helpers.html
+  # scope: Model, which should be interacted with
+  # url: Where the form should submitted to
+  # local: Uses local http instead of ajax, when true
+%>
+
+<%= form_with scope: :article, url: articles_path, local: true do |f| %>
+  <p>
+    <%= f.label :title %><br />
+    <%= f.text_field :title %>
+  </p>
+
+  <p>
+    <%= f.label :description %><br />
+    <%= f.text_area :description %>
+  </p>
+
+  <p>
+    <%= f.submit %>
+  </p>
+<% end %>
+```
+
+#### Store submitted form data with the `ArticlesController#create` action
+
+Update the `#create` action to:
+
+1. Get the submitted form data
+2. Store data in the articles table
+3. Redirect to the just created article
+
+```ruby
+# app/controller/articles_method.rb #create action
+def create
+  # https://api.rubyonrails.org/v6.1.4/classes/ActionController/StrongParameters.html
+  # You need to permit the submitted fields for the articles table!
+  @article = Article.new(params.require(:article).permit(:title, :description))
+  @article.save
+
+  # Redirect to the article that was created.
+  # Rails will automatically take the id from @article.
+  redirect_to article_path(@article)
+end
+```
+
+There is also a shortcut available for redirecting:
+
+```ruby
+redirect_to @article
+```
 
 ## Examples
 

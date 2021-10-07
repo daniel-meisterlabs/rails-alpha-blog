@@ -1,0 +1,24 @@
+<h1>Create a new article</h1>
+
+<%
+  # https://guides.rubyonrails.org/form_helpers.html
+  # scope: Model, which should be interacted with
+  # url: Where the form should submitted to
+  # local: Uses local http instead of ajax, when true
+%>
+
+<%= form_with scope: :article, url: articles_path, local: true do |f| %>
+  <p>
+    <%= f.label :title %><br />
+    <%= f.text_field :title %>
+  </p>
+
+  <p>
+    <%= f.label :description %><br />
+    <%= f.text_area :description %>
+  </p>
+
+  <p>
+    <%= f.submit %>
+  </p>
+<% end %>
