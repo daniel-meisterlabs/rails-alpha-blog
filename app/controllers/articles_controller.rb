@@ -11,16 +11,19 @@ class ArticlesController < ApplicationController
   end
 
   def new
+    @article = Article.new
   end
 
   def create
     # https://api.rubyonrails.org/v6.1.4/classes/ActionController/StrongParameters.html
     # You need to permit the submitted fields for the articles table!
     @article = Article.new(params.require(:article).permit(:title, :description))
-    @article.save
 
-    # Redirect to the article that was created.
-    # Rails will automatically take the id from @article.
-    redirect_to article_path(@article) # shortcut: redirect_to @article
+    if @article.save
+      flash[:notice] = "Article was created successfully."
+      redirect_to article_path(@article) # shortcut: redirect_to @article
+    else
+      render 'new'
+    end
   end
 end

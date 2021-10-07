@@ -259,9 +259,78 @@ There is also a shortcut available for redirecting:
 redirect_to @article
 ```
 
-## Examples
+### Messaging - Display errors and flash messages
 
-### Adding new fields to an already existing table
+Adjust the `#create` action, to check for any errors when saving to the database:
+
+```ruby
+# app/controllers/articles_controller.rb #create action
+def create
+  @article = Article.new(params.require(:article).permit(:title, :description))
+
+  if @article.save
+    # On success: Trigger flash message and redirect to created article.
+    flash[:notice] = "Article was created successfully."
+    redirect_to @article
+  else
+    # On error: Render the `new` page, where the error will be displayed.
+    render 'new'
+  end
+end
+```
+
+Checking for `if @article.save` seems strange. However, if you try it in the rails console, it makes perfect sense, because it will return `false` on failure:
+
+```bash
+Article.new().save
+# => false
+```
+
+#### Display the error
+
+Display any occurred error, by adding the following to our `/new` page:
+
+```ruby
+# app/views/articles/new.html.erb
+<% if @article.errors.any? %>
+  <h2>The following errors prevented the article from being saved:</h2>
+  <ul>
+    <% @article.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+  </ul>
+<% end %>
+```
+
+This page is now dependend on the `@article` instance variable. So, we need to make sure that the variable also exists for the `#new` action:
+
+```ruby
+# app/controllers/articles_controller.rb #new action
+def new
+  @article = Article.new
+end
+```
+
+#### Display flash messages for successful operations
+
+https://api.rubyonrails.org/classes/ActionDispatch/Flash.html
+
+In this example, we are making flash messages available for all pages. Therefore, we render them in our global layout:
+
+```ruby
+# app/views/layouts/application.html.erb
+<body>
+  <% flash.each do |name, msg| %>
+    <%= msg %>
+  <% end %>
+
+  <%= yield %>
+</body>
+```
+
+# Examples
+
+## Adding new fields to an already existing table
 
 1. Create migration e.g: `rails generate migration add_timestamps_to_articles`
 2. Make the desired adjustments to the created migration e.g:
@@ -279,17 +348,17 @@ end
 
 3. `rails db:migrate`
 
-### Rails console tips
+## Rails console tips
 
 Start rails console: `rails c`
 
-#### Manipulate database directly
+### Manipulate database directly
 
 ```bash
 Article.create(title: "First Article", description: "Created via rails console")
 ```
 
-#### Using variables
+### Using variables
 
 The data will not hit the database directly, so you can double check your changes, before saving them. Any helper variables you create will be deleted after exiting the rails console.
 
@@ -325,7 +394,7 @@ Deletions will hit the database directly!
 article.destroy
 ```
 
-#### Viewing error messages
+### Viewing error messages
 
 ```bash
 # Attribute validation should prevent saving an article with empty fields
@@ -338,7 +407,7 @@ article.errors.full_messages
 # => ["Title can't be blank", "Description can't be blank"]
 ```
 
-### Debugging with `byebug`
+## Debugging with `byebug`
 
 You can set `byebug` anywhere in the code, which will pause the application at exactly that point, before continuing.
 
@@ -376,7 +445,7 @@ continue
 ```
 
 
-## Useful rails commands
+# Useful rails commands
 
 1. Readable list all available routes: `rails routes --expanded`
 
